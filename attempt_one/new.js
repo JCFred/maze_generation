@@ -49,6 +49,7 @@ function drawGrid(){
     }
 }
 
+var connectCounter = -1
 function startMaze(){
     let randY = Math.floor(Math.random() * gridArr.length)
     let randX = Math.floor(Math.random() * gridArr[randY].length)
@@ -60,21 +61,50 @@ function startMaze(){
     let arrPosTwo = gridArr[randY +side[0]][randX +side[1]]
 
     if(arrPos.set !== arrPosTwo.set){
+        dropWalls(arrPos.node, arrPosTwo.node, side[2])
+        changeSets(arrPos.set, arrPosTwo.set)
         arrPos.node.style.backgroundColor = "#bcc7ff"
-        let tempString = "border"+ side[2]
-        console.log(tempString);
-        console.log(arrPos.node.style.tempString)
         posSides.splice(randSide, 1)
         arrPosTwo.node.style.backgroundColor = "#bcc7ff"
         //This is where done fucked up!!
         //So close... but now you need to delete the border walls of both divs
         //Also, need to change the sets on the array for both positions.
         //other than that... so close mother fucker
-
-
-
     }
 
+}
+
+function changeSets(setA, setB){
+    for(let y in gridArr){
+        for(let x in gridArr[y]){
+            if(gridArr[y][x].set == setA || gridArr[y][x].set == setB){
+                gridArr[y][x].set = connectCounter
+                document.getElementById(y +"_"+ x).innerHTML = connectCounter
+            }
+        }
+    }
+    connectCounter--
+}
+
+function dropWalls(nodeA, nodeB, side){
+    switch(side){
+        case "left":
+            nodeA.style.borderLeft = "0px"
+            nodeB.style.borderRight = "0px"
+            break;
+        case "top":
+            nodeA.style.borderTop = "0px"
+            nodeB.style.borderBottom = "0px"
+            break;
+        case "right":
+            nodeA.style.borderRight = "0px"
+            nodeB.style.borderLeft = "0px"
+            break;
+        case "bottom":
+            nodeA.style.borderBottom = "0px"
+            nodeB.style.borderTop = "0px"
+            break;
+    }
 }
 
 function createArray(y, x, setNum, node){
@@ -83,63 +113,63 @@ function createArray(y, x, setNum, node){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[1, 0, "Right"],[0, 1, "Bottom"]]
+            sides: [[1, 0, "right"],[0, 1, "bottom"]]
         })
     //bottom left corner
     } else if(y === 0 && x === xSize -1){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[0, -1, "Top"],[1, 0, "Right"]]
+            sides: [[0, -1, "top"],[1, 0, "right"]]
         })
     //bottom right corner
     } else if(y === ySize -1 && x === 0){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[-1, 0, "Left"],[0, -1, "Top"]]
+            sides: [[-1, 0, "left"],[0, -1, "top"]]
         })
     //top right corner
     } else if(y === ySize -1 === xSize -1){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[-1, 0, "Left"],[0, 1, "Bottom"]]
+            sides: [[-1, 0, "left"],[0, 1, "bottom"]]
         })
     //left edge
     } else if(y == 0){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[0, -1, "Top"],[1, 0, "Right"],[0, 1, "Bottom"]]
+            sides: [[0, -1, "top"],[1, 0, "right"],[0, 1, "bottom"]]
         })
     //top edge
     } else if(x == 0){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[-1, 0, "Left"],[1, 0, "Right"],[0, 1, "Bottom"]]
+            sides: [[-1, 0, "left"],[1, 0, "right"],[0, 1, "bottom"]]
         })
     //right edge
     } else if(y == ySize -1){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[-1, 0, "Left"],[0, -1, "Top"],[0, 1, "Bottom"]]
+            sides: [[-1, 0, "left"],[0, -1, "top"],[0, 1, "bottom"]]
         })
     //bottom edge
-    } else if(y == xSize -1){
+} else if(x == xSize -1){
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[-1, 0, "Left"],[0, -1, "Top"],[1, 0, "Right"]]
+            sides: [[-1, 0, "left"],[0, -1, "top"],[1, 0, "right"]]
         })
     //anywhere else in the middle
     } else{
         gridArr[y].push({
             set: setNum,
             node: node,
-            sides: [[-1, 0, "Left"],[0, -1, "Top"],[1, 0, "Right"],[0, 1, "Bottom"]]
+            sides: [[-1, 0, "left"],[0, -1, "top"],[1, 0, "right"],[0, 1, "bottom"]]
         })
     }
 }
