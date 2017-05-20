@@ -40,6 +40,7 @@ function drawGrid(){
             tempDiv.setAttribute('y', y)
             tempDiv.setAttribute('x', x)
             tempDiv.innerHTML = setNum
+            tempDiv.setAttribute('set', setNum)
             container.append(tempDiv)
 
             //note on 'gridArr[pos].sides'>>[left, up, right, down]
@@ -51,27 +52,99 @@ function drawGrid(){
 
 var connectCounter = -1
 function startMaze(){
-    let randY = Math.floor(Math.random() * gridArr.length)
-    let randX = Math.floor(Math.random() * gridArr[randY].length)
+    let randPos = getRandom()
 
-    let arrPos = gridArr[randY][randX]
+    let arrPos = gridArr[randPos[0]][randPos[1]]
     let posSides = arrPos.sides
     let randSide = Math.floor(Math.random() * posSides.length)
     let side = posSides[randSide]
-    let arrPosTwo = gridArr[randY +side[0]][randX +side[1]]
 
-    if(arrPos.set !== arrPosTwo.set){
-        dropWalls(arrPos.node, arrPosTwo.node, side[2])
-        changeSets(arrPos.set, arrPosTwo.set)
-        arrPos.node.style.backgroundColor = "#bcc7ff"
-        posSides.splice(randSide, 1)
-        arrPosTwo.node.style.backgroundColor = "#bcc7ff"
-        //This is where done fucked up!!
-        //So close... but now you need to delete the border walls of both divs
-        //Also, need to change the sets on the array for both positions.
-        //other than that... so close mother fucker
+    let newNode = document.getElementById((+randPos[0] +side[0]) +"_"+ (+randPos[1] +side[1]))
+    if(newNode !== undefined){
+        let setTwo = newNode.getAttribute('set')
+        let setOne = arrPos.node.getAttribute('set')
+
+        if(setOne !== setTwo){
+
+            let posTwoArr = []
+            for(let checkY in gridArr){
+                for(let checkX in gridArr[checkY]){
+                    if(gridArr[checkY][checkX].node === newNode) {
+                        posTwoArr = [checkY, checkX]
+                        break;
+                    }
+                }
+            }
+            let arrPosTwo = gridArr[posTwoArr[0]][posTwoArr[1]]
+
+            dropWalls(arrPos.node, arrPosTwo.node, side[2])
+            changeSets(arrPos.set, arrPosTwo.set)
+            updateArray(randPos, posTwoArr, side[2])
+            arrPos.node.style.backgroundColor = "#bcc7ff"
+            arrPosTwo.node.style.backgroundColor = "#bcc7ff"
+
+            //remove sides from array
+            posSides.splice(randSide, 1)
+
+        }
     }
 
+    if(gridArr.length > 1){
+        startMaze()
+    }
+}
+
+function getRandom(){
+    let allGood = false
+    let randY, randX
+    while(!allGood){
+        randY = Math.floor(Math.random() * gridArr.length)
+        if(gridArr[randY].length > 0){
+            randX = Math.floor(Math.random() * gridArr[randY].length)
+            if(gridArr[randY][randX].sides.length > 1){
+                allGood = true
+            }
+        }
+    }
+    return [randY, randX]
+}
+
+function updateArray(posA, posB, side){
+    let oppSide
+    switch(side){
+        case "left":
+            oppSide = "right"
+            break;
+        case "top":
+            oppSide = "bottom"
+            break;
+        case "right":
+            oppSide = "left"
+            break;
+        case "bottom":
+            oppSide = "top"
+            break
+    }
+    let arrPosA = gridArr[posA[0]][posA[1]]
+    let arrPosB = gridArr[posB[0]][posB[1]]
+    for(let matchA in arrPosA.sides){
+        if(arrPosA.sides[matchA][2] === side){
+            arrPosA.sides.splice(matchA, 1)
+            if(arrPosA.sides.length < 1){
+                gridArr[posA[0]].splice([posA[1]], 1)
+                console.log(gridArr[posA[0]].length);
+            }
+        }
+    }
+    for(let matchB in arrPosB.sides){
+        if(arrPosB.sides[matchB][2] === oppSide){
+            arrPosB.sides.splice(matchB, 1)
+            if(arrPosB.sides.length < 1){
+                gridArr[posB[0]].splice([posB[1]], 1)
+                console.log(gridArr[posB[0]].length);
+            }
+        }
+    }
 }
 
 function changeSets(setA, setB){
@@ -80,6 +153,7 @@ function changeSets(setA, setB){
             if(gridArr[y][x].set == setA || gridArr[y][x].set == setB){
                 gridArr[y][x].set = connectCounter
                 document.getElementById(y +"_"+ x).innerHTML = connectCounter
+                document.getElementById(y +"_"+ x).setAttribute('set', connectCounter)
             }
         }
     }
