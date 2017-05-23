@@ -11,11 +11,11 @@ main{
     border: 1px solid black;
 }
 .gridBox{
-    border: 1px solid black;
+    /*border: 1px solid black;*/
     box-sizing: border-box;
     margin-left: -1;
     margin-top: -1;
-    background-color: #d6ffd9;
+    background-color: #3d3d3d;
 }
 .btnSection{
     display:flex;
