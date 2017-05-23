@@ -36,9 +36,9 @@ function drawGrid(){
     container.style.width = (xSize * boxSize) +"px"
     container.style.height = (ySize * boxSize) +"px"
 
-    for (var x = 0; x < xSize; x++) {
+    for (let x = 0; x < xSize; x++) {
         gridArr[x] = []
-        for (var y = 0; y < ySize; y++) {
+        for (let y = 0; y < ySize; y++) {
             let tempDiv = document.createElement('div')
             tempDiv.className = 'gridBox'
             tempDiv.id = x +"_"+ y
@@ -61,19 +61,82 @@ function startMaze(){
     let randX = randomBetween(1,13)
     let randY = randomBetween(1,13)
     updateArrays(randX, randY)
+    updateGrid()
+}
+
+
+function updateGrid(){
+    for (let x = 0; x < xSize; x++) {
+        for (let y = 0; y < ySize; y++) {
+            if(gridArr[x][y].open){
+                gridArr[x][y].node.style.backgroundColor = "rgb(255, 255, 255)"
+            } else if(gridArr[x][y].potential){
+                gridArr[x][y].node.style.backgroundColor = "rgb(215, 222, 162)"
+            } else {
+                gridArr[x][y].node.style.backgroundColor = "#3d3d3d"
+            }
+        }
+    }
 }
 
 function updateArrays(xx, yy){
+    gridArr[xx][yy].open = true
+    //change potentials directly bordering
+    for(let i = 0; i < oneAway.length; i++){
+        let newX = xx + oneAway[i][0]
+        let newY = yy + oneAway[i][1]
+        if(gridArr[newX][newY].potential){
+            gridArr[newX][newY].potential = false
+            findRemove(newX, newY)
+        }
+    }
 
+    //add potential to those two out.
+    for(let n = 0; n < twoAway.length; n++){
+        let twoX = +xx + twoAway[n][0]
+        let twoY = +yy + twoAway[n][1]
+
+        if(twoX > -1 && twoX < xSize -1 && twoY > -1 && twoY < ySize -1){
+            if(!gridArr[twoX][twoY].open){
+                let checkForOpen = checkOneAround(twoX, twoY)
+                if(checkForOpen < 1){
+                    gridArr[twoX][twoY].potential = true
+                    potentialArr.push([twoX, twoY])
+                }
+            }
+        }
+    }
+
+    //run through potential array and update it
+    for(let p = 0; p < potentialArr.length; p++){
+        let tempX = potentialArr[p][0]
+        console.log(tempX);
+        let tempY = potentialArr[p][1]
+        console.log(tempY);
+        let count = checkOneAround(tempX, tempY)
+        if(count > 0){
+            gridArr[tempX][tempY].potential = false
+            findRemove(tempX, tempY)
+        }
+    }
+}
+
+function findRemove(xx, yy){
+    for(let spot in potentialArr){
+        if(potentialArr[spot][0] == xx && potentialArr[spot][1] == yy){
+            potentialArr.splice(spot, 1)
+        }
+    }
 }
 
 function checkOneAround(xx, yy){
+    let tempNum = 0
     for(let i = 0; i > oneAway.length; i++){
-        if(gridArr[xx][yy].open){
-            return true
+        if(gridArr[xx + oneAway[i][0]][yy + oneAway[i][1]].open){
+            tempNum++
         }
     }
-    return false
+    return tempNum
 }
 
 function randomBetween(min,max)
