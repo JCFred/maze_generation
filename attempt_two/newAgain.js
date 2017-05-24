@@ -21,9 +21,9 @@ $(document).ready(function(){
     })
 })
 
-const xSize = 50
-const ySize = 50
-const boxSize = 10
+const xSize = 100
+const ySize = 100
+const boxSize = 8
 const gridArr = []
 const potentialArr = []
 const fourDirArr = [[0, -1], [-1, 0], [0, 1], [1, 0]]
@@ -31,8 +31,10 @@ const fourDirArr = [[0, -1], [-1, 0], [0, 1], [1, 0]]
 function drawGrid(){
     var container = document.querySelector('.container')
     $('#container').empty()
-    container.style.width = (xSize * boxSize) +"px"
-    container.style.height = (ySize * boxSize) +"px"
+    container.style.maxWidth = (xSize * boxSize) +"px"
+    container.style.minWidth = (xSize * boxSize) +"px"
+    container.style.maxHeight = (ySize * boxSize) +"px"
+    container.style.minHeight = (ySize * boxSize) +"px"
 
     for (let x = 0; x < xSize; x++) {
         gridArr[x] = []
