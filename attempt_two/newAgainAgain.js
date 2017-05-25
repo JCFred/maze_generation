@@ -18,12 +18,14 @@ $(document).ready(function(){
     })
 })
 
-const xSize = 80
-const ySize = 80
-const boxSize = 8
+const xSize = 350
+const ySize = 350
+const boxSize = 2
 const gridArr = []
 const potentialArr = []
 const fourDirArr = [[0, -1], [-1, 0], [0, 1], [1, 0]]
+
+const timeSet = 5
 
 function drawGrid(){
     var container = document.querySelector('.container')
@@ -53,8 +55,8 @@ function drawGrid(){
 }
 
 function startMaze(){
-    let randX = randomBetween(1,13)
-    let randY = randomBetween(1,13)
+    let randX = randomBetween(1,xSize -1)
+    let randY = randomBetween(1,ySize -1)
     updateArrays(randX, randY)
     runStep()
 }
@@ -67,31 +69,40 @@ function runStep(){
     } else {
         console.log("step error")
     }
-    setTimeout(runStep, 50)
+    setTimeout(runStep, timeSet)
 }
 
 function updateArrays(xx, yy){
     gridArr[xx][yy].state = 2
-    removePossibles()
-    setPossibles()
-    updateGrid()
+    removePossibles(xx, yy)
+    setPossibles(xx, yy)
+    updateGrid(xx, yy)
 }
 
-function updateGrid(){
-    for (let x = 0; x < xSize; x++) {
-        for (let y = 0; y < ySize; y++) {
-            if(gridArr[x][y].state === 2){
-                document.getElementById(x +"_"+ y).style.backgroundColor = "rgb(255, 255, 255)"
-            } else if(gridArr[x][y].state === 1){
-                document.getElementById(x +"_"+ y).style.backgroundColor = "rgb(215, 222, 162)"
-            } else if (gridArr[x][y].state === 0){
-                document.getElementById(x +"_"+ y).style.backgroundColor = "#3d3d3d"
+function updateGrid(xx, yy){
+    let startX = +xx -5
+    let startY = +yy -5
+    let newX, newY
+    for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 10; y++) {
+            newX = startX + x
+            newY = startY + y
+            if(newX > -1 && newX < xSize && newY > -1 && newY < ySize){
+                if(gridArr[newX][newY].state === 2){
+                    document.getElementById(newX +"_"+ newY).style.backgroundColor = "rgb(255, 255, 255)"
+                } else if(gridArr[newX][newY].state === 1){
+                    document.getElementById(newX +"_"+ newY).style.backgroundColor = "rgb(215, 222, 162)"
+                } else if (gridArr[newX][newY].state === 0){
+                    document.getElementById(newX +"_"+ newY).style.backgroundColor = "#3d3d3d"
+                }
             }
         }
     }
 }
 
+
 function findPassage(randPos){
+    console.log(potentialArr[randPos]);
     let xx = potentialArr[randPos][0]
     let yy = potentialArr[randPos][1]
     let tempArr = []
@@ -121,23 +132,37 @@ function findPassage(randPos){
 }
 
 //remove all state === 1 from the gridArr
-function removePossibles(){
-    potentialArr.splice(0, potentialArr.length)
-    for (let x = 0; x < xSize; x++) {
-        for (let y = 0; y < ySize; y++) {
-            if(gridArr[x][y].state === 1){
-                gridArr[x][y].state = 0
+function removePossibles(xx, yy){
+    let startX = +xx -5
+    let startY = +yy -5
+    let newX, newY
+    for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 10; y++) {
+            newX = startX + x
+            newY = startY + y
+            if(newX > -1 && newX < xSize && newY > -1 && newY < ySize){
+                if(gridArr[newX][newY].state === 1){
+                    gridArr[newX][newY].state = 0
+                    findRemove(newX, newY)
+                }
             }
         }
     }
 }
 
 //set the new state === 1 on the gridArr
-function setPossibles(){
-    for (let x = 0; x < xSize; x++) {
-        for (let y = 0; y < ySize; y++) {
-            if(gridArr[x][y].state === 2){
-                twoAwayCheck(x, y)
+function setPossibles(xx, yy){
+    let startX = +xx -5
+    let startY = +yy -5
+    let newX, newY
+    for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 10; y++) {
+            newX = startX + x
+            newY = startY + y
+            if(newX > -1 && newX < xSize && newY > -1 && newY < ySize){
+                if(gridArr[newX][newY].state === 2){
+                    twoAwayCheck(newX, newY)
+                }
             }
         }
     }

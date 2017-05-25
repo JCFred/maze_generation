@@ -1,0 +1,24 @@
+main{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height: 700px;
+}
+.container{
+    display:flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border: 1px solid black;
+}
+.gridBox{
+    border: 1px solid black;
+    box-sizing: border-box;
+    margin-left: -1;
+    margin-top: -1;
+    background-color: #ededed;
+    color: whitergb(154, 154, 154);
+}
+.btnSection{
+    display:flex;
+    flex-direction: column;
+}
